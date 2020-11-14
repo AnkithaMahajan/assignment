@@ -1,4 +1,4 @@
-# assignment
+# Assignment
 1. Build all projects :  
 
 mvn clean install 
