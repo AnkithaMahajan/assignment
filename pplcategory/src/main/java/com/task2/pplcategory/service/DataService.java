@@ -32,7 +32,9 @@ public class DataService {
 
     @Cacheable("dataMap")
     public DataMap getDataAndCategoryMap(){
+
         List<DataPO> dataPOList= getAllFromDb();
+
         Map<Long, CategoryInfo> categoryInfoMap = mapDataToCategoryInfoWithRel(dataPOList);
 
         return new DataMap(dataPOList, categoryInfoMap);

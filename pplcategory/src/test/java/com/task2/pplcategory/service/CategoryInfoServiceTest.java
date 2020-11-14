@@ -1,128 +1,160 @@
-//package com.task2.pplcategory.service;
-//
-//import com.task2.pplcategory.exception.PplCategoryNotFoundException;
-//import com.task2.pplcategory.model.CategoryInfo;
-//import com.task2.pplcategory.model.DataPO;
-//import com.task2.pplcategory.repository.CategoryDataRepository;
-//import org.junit.jupiter.api.*;
-//import org.mockito.Mockito;
-//import org.springframework.boot.test.context.SpringBootTest;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//@SpringBootTest
-//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-//class CategoryInfoServiceTest {
-//
-//    private CategoryInfoService categoryInfoService;
-//    private CategoryDataRepository categoryDataRepository;
-//
-//    @BeforeAll
-//    public void setup(){
-//        this.categoryDataRepository = Mockito.mock(CategoryDataRepository.class);
-//        this.categoryInfoService = new CategoryInfoService(categoryDataRepository);
-//    }
-//
-//    @AfterEach
-//    private void resetMock(){
-//        Mockito.reset(categoryDataRepository);
-//    }
-//
-//    @Test
-//    void getInfoForAllCategoriesExceptionTest(){
-//        List<DataPO> dataList = null;
-//        Mockito.when(categoryDataRepository.findAll()).thenReturn(dataList);
-//        Assertions.assertThrows(PplCategoryNotFoundException.class ,categoryInfoService::getInfoForAllCategories);
-//
-//    }
-//
-//    @Test
-//    void getInfoForAllCategoriesTest(){
-//        List<DataPO> dataList = new ArrayList<>();
-//
-//        DataPO dataPO1 = new DataPO();
-//        dataPO1.setId((long)1);
-//        dataPO1.setParentId(0);
-//        dataPO1.setName("Warrior");
-//        dataPO1.setColour("Red");
-//
-//        DataPO dataPO2 = new DataPO();
-//        dataPO2.setId((long)5);
-//        dataPO2.setParentId(1);
-//        dataPO2.setName("Fighter");
-//        dataPO2.setColour("Blue");
-//
-//        dataList.add(dataPO1);
-//        dataList.add(dataPO2);
-//
-//        Mockito.when(categoryDataRepository.findAll()).thenReturn(dataList);
-//        List<CategoryInfo> categoryInfos = categoryInfoService.getInfoForAllCategories();
-//
-//        Assertions.assertNotNull(categoryInfos);
-//        Assertions.assertEquals(1, categoryInfos.size());
-//        Assertions.assertEquals("Warrior", categoryInfos.get(0).getName());
-//        Assertions.assertNotNull(categoryInfos.get(0).getSubClasses());
-//        Assertions.assertEquals("Fighter", categoryInfos.get(0).getSubClasses().get(0).getName());
-//
-//    }
-//
-//    @Test
-//    void getInfoForPersonWithIdExceptionTest(){
-//        List<DataPO> dataList = null;
-//        Mockito.when(categoryDataRepository.findAll()).thenReturn(dataList);
-//        Assertions.assertThrows(PplCategoryNotFoundException.class ,categoryInfoService::getInfoForAllCategories);
-//
-//    }
-//
-//    @Test
-//    void getInfoForPersonWithIdNoChildTest(){
-//        List<DataPO> dataList = new ArrayList<>();
-//
-//        DataPO dataPO = new DataPO();
-//        dataPO.setId((long)5);
-//        dataPO.setParentId(1);
-//        dataPO.setName("Fighter");
-//        dataPO.setColour("Blue");
-//
-//        dataList.add(dataPO);
-//
-//        Mockito.when(categoryDataRepository.findAll()).thenReturn(dataList);
-//        CategoryInfo categoryInfo = categoryInfoService.getInfoForPersonWithId((long)5);
-//
-//        Assertions.assertNotNull(categoryInfo);
-//        Assertions.assertEquals("Fighter", categoryInfo.getName());
-//        Assertions.assertEquals("Blue", categoryInfo.getColour());
-//        Assertions.assertNull(categoryInfo.getSubClasses());
-//
-//    }
-//
-//    @Test
-//    void getInfoForPersonWithIdTest(){
-//        List<DataPO> dataList = new ArrayList<>();
-//
-//        DataPO dataPO = new DataPO();
-//        dataPO.setId((long)13);
-//        dataPO.setParentId(4);
-//        dataPO.setName("Thief");
-//        dataPO.setColour("Blue");
-//
-//        DataPO dataPO2 = new DataPO();
-//        dataPO2.setId((long)15);
-//        dataPO2.setParentId(13);
-//        dataPO2.setName("Assassin");
-//        dataPO2.setColour("Red");
-//
-//        dataList.add(dataPO);
-//        dataList.add(dataPO2);
-//
-//        Mockito.when(categoryDataRepository.findAll()).thenReturn(dataList);
-//        CategoryInfo categoryInfo = categoryInfoService.getInfoForPersonWithId((long)13);
-//
-//        Assertions.assertNotNull(categoryInfo);
-//        Assertions.assertEquals("Thief", categoryInfo.getName());
-//        Assertions.assertEquals("Blue", categoryInfo.getColour());
-//        Assertions.assertNotNull(categoryInfo.getSubClasses());
-//    }
-//
-//}
+package com.task2.pplcategory.service;
+
+import com.task2.pplcategory.model.CategoryInfo;
+import com.task2.pplcategory.model.DataMap;
+import com.task2.pplcategory.model.DataPO;
+import org.junit.jupiter.api.*;
+import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+@SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class CategoryInfoServiceTest {
+
+    private CategoryInfoService categoryInfoService;
+    private DataService dataService;
+
+    @BeforeAll
+    public void setup(){
+        this.dataService = Mockito.mock(DataService.class);
+        this.categoryInfoService = new CategoryInfoService(dataService);
+    }
+
+    @AfterEach
+    private void resetMock(){
+        Mockito.reset(dataService);
+    }
+
+    @Test
+    void getInfoForAllCategoriesTest(){
+
+        Map<Long, CategoryInfo> categoryInfoMap = new TreeMap<>();
+        List<DataPO> dataPOList = new ArrayList<>();
+
+        DataPO dataPO = new DataPO();
+        dataPO.setId((long)13);
+        dataPO.setParentId(4);
+        dataPO.setName("Thief");
+        dataPO.setColour("Blue");
+
+        DataPO dataPO3 = new DataPO();
+        dataPO3.setId((long)4);
+        dataPO3.setParentId(0);
+        dataPO3.setName("Rogue");
+        dataPO3.setColour("Yellow");
+
+        DataPO dataPO2 = new DataPO();
+        dataPO2.setId((long)15);
+        dataPO2.setParentId(13);
+        dataPO2.setName("Assassin");
+        dataPO2.setColour("Red");
+
+        dataPOList.add(dataPO);
+        dataPOList.add(dataPO2);
+        dataPOList.add(dataPO3);
+
+        CategoryInfo categoryInfo = new CategoryInfo();
+        categoryInfo.setName(dataPO3.getName());
+        categoryInfo.setColour(dataPO3.getColour());
+
+        List<CategoryInfo> subClasses = new ArrayList<>();
+        CategoryInfo child = new CategoryInfo();
+        child.setName(dataPO.getName());
+        child.setColour(dataPO.getColour());
+
+        List<CategoryInfo> subClasses1 = new ArrayList<>();
+        CategoryInfo grandChild = new CategoryInfo();
+        grandChild.setName(dataPO2.getName());
+        grandChild.setColour(dataPO2.getColour());
+        subClasses1.add(grandChild);
+        child.setSubClasses(subClasses1);
+
+        subClasses.add(child);
+        categoryInfo.setSubClasses(subClasses);
+
+        categoryInfoMap.put(dataPO3.getId(), categoryInfo);
+
+        DataMap dataMap = new DataMap(dataPOList, categoryInfoMap);
+
+        Mockito.when(dataService.getDataAndCategoryMap()).thenReturn(dataMap);
+
+        List<CategoryInfo> categoryInfoList = categoryInfoService.getInfoForAllCategories();
+
+        Assertions.assertNotNull(categoryInfoList);
+        Assertions.assertEquals(1, categoryInfoList.size());
+        Assertions.assertEquals("Rogue", categoryInfoList.get(0).getName());
+        Assertions.assertEquals("Thief", categoryInfoList.get(0).getSubClasses().get(0).getName());
+        Assertions.assertEquals("Assassin", categoryInfoList.get(0).getSubClasses().get(0).getSubClasses().get(0).getName());
+
+    }
+
+    @Test
+    void getInfoForPersonWithIdTest(){
+
+        Map<Long, CategoryInfo> categoryInfoMap = new TreeMap<>();
+        List<DataPO> dataPOList = new ArrayList<>();
+
+        DataPO dataPO = new DataPO();
+        dataPO.setId((long)13);
+        dataPO.setParentId(4);
+        dataPO.setName("Thief");
+        dataPO.setColour("Blue");
+
+        DataPO dataPO3 = new DataPO();
+        dataPO3.setId((long)4);
+        dataPO3.setParentId(0);
+        dataPO3.setName("Rogue");
+        dataPO3.setColour("Yellow");
+
+        DataPO dataPO2 = new DataPO();
+        dataPO2.setId((long)15);
+        dataPO2.setParentId(13);
+        dataPO2.setName("Assassin");
+        dataPO2.setColour("Red");
+
+        dataPOList.add(dataPO);
+        dataPOList.add(dataPO2);
+        dataPOList.add(dataPO3);
+
+        CategoryInfo categoryInfo = new CategoryInfo();
+        categoryInfo.setName(dataPO3.getName());
+        categoryInfo.setColour(dataPO3.getColour());
+
+        List<CategoryInfo> subClasses = new ArrayList<>();
+        CategoryInfo child = new CategoryInfo();
+        child.setName(dataPO.getName());
+        child.setColour(dataPO.getColour());
+
+        List<CategoryInfo> subClasses1 = new ArrayList<>();
+        CategoryInfo grandChild = new CategoryInfo();
+        grandChild.setName(dataPO2.getName());
+        grandChild.setColour(dataPO2.getColour());
+        subClasses1.add(grandChild);
+        child.setSubClasses(subClasses1);
+
+        subClasses.add(child);
+        categoryInfo.setSubClasses(subClasses);
+
+        categoryInfoMap.put(dataPO3.getId(), categoryInfo);
+        categoryInfoMap.put(dataPO.getId(), child);
+        categoryInfoMap.put(dataPO2.getId(), grandChild);
+
+        DataMap dataMap = new DataMap(dataPOList, categoryInfoMap);
+
+        Mockito.when(dataService.getDataAndCategoryMap()).thenReturn(dataMap);
+
+        CategoryInfo categoryInfoResp = categoryInfoService.getInfoForPersonWithId((long) 13);
+
+        Assertions.assertNotNull(categoryInfoResp);
+        Assertions.assertEquals(3, dataMap.getCategoryInfoMap().size());
+        Assertions.assertEquals("Thief", categoryInfoResp.getName());
+        Assertions.assertEquals("Assassin", categoryInfoResp.getSubClasses().get(0).getName());
+
+    }
+
+}
