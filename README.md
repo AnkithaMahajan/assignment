@@ -19,6 +19,8 @@ java -jar pplcategory-0.0.1.jar
 
 Task 1 -
 
+Swagger - http://localhost:8083/swagger-ui.html
+
 GET - http://localhost:8081/word/greet-word  
 POST - http://localhost:8082/person/person-name  
 GET - http://localhost:8083/greet/server-status  
